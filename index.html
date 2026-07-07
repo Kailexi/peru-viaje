@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notas de Viaje para un Rayito de Sol</title>
+<meta name="description" content="Para Tanya, antes de su viaje a Perú.">
+
+<!-- Google Fonts: Fraunces (display), Rye (stamp/ink text), Vollkorn (body), Space Mono (numbers/labels) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Rye&family=Vollkorn:ital,wght@0,400;0,600;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Aged paper texture + faded map/flight-path background layer -->
+<div class="paper-texture" aria-hidden="true"></div>
+<div class="flight-path-bg" aria-hidden="true">
+  <svg viewBox="0 0 1440 1400" preserveAspectRatio="xMidYMid slice">
+    <path class="flight-line" d="M -50 200 Q 300 50, 600 300 T 1200 250 T 1550 500" />
+    <path class="flight-line flight-line--2" d="M -80 900 Q 250 1050, 500 850 T 1100 1000 T 1500 850" />
+    <circle class="flight-dot" cx="-50" cy="200" r="5"/>
+    <circle class="flight-dot flight-dot--2" cx="1550" cy="500" r="5"/>
+  </svg>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header">
+  <div class="header-inner">
+    <svg class="compass-mark" viewBox="0 0 60 60" aria-hidden="true">
+      <circle cx="30" cy="30" r="27" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M30 8 L34 30 L30 52 L26 30 Z" fill="currentColor" opacity="0.85"/>
+      <path d="M8 30 L30 26 L52 30 L30 34 Z" fill="currentColor" opacity="0.55"/>
+      <circle cx="30" cy="30" r="2.5" fill="currentColor"/>
+    </svg>
+    <p class="header-wordmark">Notas de Viaje</p>
+    <button class="envelope-btn" id="openNotesBtn" aria-haspopup="dialog" aria-controls="notesPanel" aria-label="Abrir notas de amigos">
+      <svg viewBox="0 0 48 36" width="30" height="24">
+        <rect x="1" y="1" width="46" height="34" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M2 3 L24 21 L46 3" fill="none" stroke="currentColor" stroke-width="2"/>
+      </svg>
+      <span class="envelope-dot" id="envelopeDot" hidden></span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ============ HERO / COUNTDOWN STAMP ============ -->
+  <section class="hero" id="hero">
+    <p class="hero-eyebrow">PARA</p>
+    <h1 class="hero-title">Tanya</h1>
+    <p class="hero-sub">un puñado de notas de viaje antes de que el Perú te reciba</p>
+
+    <div class="stamp-wrap" id="stampWrap">
+      <svg class="stamp-badge" viewBox="0 0 320 320" aria-hidden="true">
+        <circle cx="160" cy="160" r="150" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="4 6"/>
+        <circle cx="160" cy="160" r="132" fill="none" stroke="currentColor" stroke-width="1.5"/>
+        <path id="arcTop" d="M 45 160 A 115 115 0 0 1 275 160" fill="none"/>
+        <path id="arcBottom" d="M 275 190 A 115 115 0 0 1 45 190" fill="none"/>
+        <text class="stamp-arc-text">
+          <textPath href="#arcTop" startOffset="50%" text-anchor="middle">· REPÚBLICA DEL PERÚ ·</textPath>
+        </text>
+        <text class="stamp-arc-text stamp-arc-text--bottom">
+          <textPath href="#arcBottom" startOffset="50%" text-anchor="middle">RAYITO DE SOL · VIAJERA</textPath>
+        </text>
+      </svg>
+
+      <div class="stamp-content">
+        <div id="countdownView" class="countdown" hidden>
+          <div class="countdown-grid">
+            <div class="countdown-cell"><span class="countdown-num" id="cdDays">00</span><span class="countdown-label">días</span></div>
+            <div class="countdown-cell"><span class="countdown-num" id="cdHours">00</span><span class="countdown-label">horas</span></div>
+            <div class="countdown-cell"><span class="countdown-num" id="cdMins">00</span><span class="countdown-label">min</span></div>
+            <div class="countdown-cell"><span class="countdown-num" id="cdSecs">00</span><span class="countdown-label">seg</span></div>
+          </div>
+          <p class="countdown-caption">hasta el despegue</p>
+        </div>
+
+        <div id="arrivedView" class="arrived-msg" hidden>
+          <p>¡Buen viaje!</p>
+          <p class="arrived-sub">ya estás en Perú, rayito ☀️</p>
+        </div>
+
+        <!-- Shown only once, before a departure date has ever been set -->
+        <form id="datePickerForm" class="date-picker-form" hidden>
+          <label for="departureInput">elige tu fecha de vuelo</label>
+          <input type="date" id="departureInput" required>
+          <button type="submit">Guardar fecha</button>
+          <p class="date-picker-hint">solo se puede fijar una vez — ¡elígela con cariño!</p>
+        </form>
+      </div>
+    </div>
+    <p class="hero-note" id="dateSourceNote"></p>
+  </section>
+
+  <!-- ============ BEFORE / AFTER PHOTOS ============ -->
+  <section class="photos" id="photos">
+    <div class="section-stamp" aria-hidden="true">ANTES · DESPUÉS</div>
+    <h2 class="section-title">Cómo has crecido</h2>
+
+    <div class="slider-shell">
+      <div class="ba-empty" id="baEmpty">
+        <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
+          <rect x="4" y="10" width="40" height="30" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="15" cy="20" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 34 L16 24 L24 30 L32 20 L44 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p>aún no hay fotos de antes/después</p>
+        <p class="ba-empty-sub">sube el primer par cuando lo tengas — un antes y un después juntos</p>
+      </div>
+
+      <div class="ba-slider" id="baSlider" hidden>
+        <img class="ba-img ba-img--after" id="baAfterImg" src="" alt="">
+        <div class="ba-clip" id="baClip">
+          <img class="ba-img ba-img--before" id="baBeforeImg" src="" alt="">
+        </div>
+        <div class="ba-handle" id="baHandle">
+          <div class="ba-handle-line"></div>
+          <div class="ba-handle-grip">
+            <svg viewBox="0 0 24 24" width="16" height="16"><path d="M8 6 L2 12 L8 18 M16 6 L22 12 L16 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+        <span class="ba-tag ba-tag--before">ANTES</span>
+        <span class="ba-tag ba-tag--after">DESPUÉS</span>
+      </div>
+
+      <div class="slider-controls" id="sliderControls" hidden>
+        <button class="nav-arrow" id="prevPairBtn" aria-label="Par anterior">&#8592;</button>
+        <div class="pair-dots" id="pairDots"></div>
+        <button class="nav-arrow" id="nextPairBtn" aria-label="Siguiente par">&#8594;</button>
+      </div>
+      <p class="ba-caption" id="baCaption"></p>
+
+      <button class="add-photo-btn" id="addPhotoBtn" title="Agregar una foto">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5 L12 19 M5 12 L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        agregar foto
+      </button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============ ADD PHOTO MODAL ============ -->
+<div class="modal-backdrop" id="addPhotoBackdrop" hidden>
+  <div class="modal add-photo-modal" role="dialog" aria-modal="true" aria-labelledby="addPhotoTitle">
+    <button class="modal-close" id="closeAddPhoto" aria-label="Cerrar">&times;</button>
+    <h3 id="addPhotoTitle">Añade un par de fotos</h3>
+    <form id="addPhotoForm">
+      <label class="file-drop">
+        <span>Foto "antes"</span>
+        <input type="file" accept="image/*" id="beforeFileInput" required>
+      </label>
+      <label class="file-drop">
+        <span>Foto "después"</span>
+        <input type="file" accept="image/*" id="afterFileInput" required>
+      </label>
+      <label class="caption-field">
+        <span>Nota breve (opcional)</span>
+        <input type="text" id="pairCaptionInput" maxlength="80" placeholder="ej. de la ventana a las nubes">
+      </label>
+      <button type="submit" class="primary-btn" id="uploadPairBtn">Subir par</button>
+      <p class="upload-status" id="uploadStatus" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ FRIEND NOTES PANEL ============ -->
+<div class="modal-backdrop" id="notesBackdrop" hidden>
+  <aside class="notes-panel" id="notesPanel" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
+    <button class="modal-close" id="closeNotes" aria-label="Cerrar notas">&times;</button>
+    <h3 id="notesTitle">La saca postal</h3>
+    <p class="notes-sub">notas de quienes te desean buen viaje</p>
+
+    <div class="notes-list" id="notesList" aria-live="polite">
+      <!-- postcards injected here -->
+    </div>
+
+    <form id="noteForm" class="note-form">
+      <input type="text" id="noteName" maxlength="40" placeholder="tu nombre" required>
+      <textarea id="noteMessage" maxlength="300" rows="3" placeholder="deja tu mensaje de buen viaje..." required></textarea>
+      <button type="submit" class="primary-btn">Enviar nota</button>
+      <p class="note-status" id="noteStatus" aria-live="polite"></p>
+    </form>
+  </aside>
+</div>
+
+<footer class="site-footer">
+  <svg class="compass-mark compass-mark--small" viewBox="0 0 60 60" aria-hidden="true">
+    <circle cx="30" cy="30" r="27" fill="none" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M30 8 L34 30 L30 52 L26 30 Z" fill="currentColor" opacity="0.85"/>
+    <path d="M8 30 L30 26 L52 30 L30 34 Z" fill="currentColor" opacity="0.55"/>
+  </svg>
+  <p>hecho a mano, con cariño, para tu vuelta al mundo</p>
+</footer>
+
+<!-- Firebase (Spark free tier): compat SDK loaded from CDN, Firestore only -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="js/firebase-config.js"></script>
+<script src="js/cloudinary-config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
