@@ -546,6 +546,14 @@
     revealEls.forEach((el) => el.classList.add("is-visible"));
   }
 
+  // The little plane flying Rusia → Perú on the background globe uses an
+  // SMIL <animateMotion>, which CSS's prefers-reduced-motion can't reach
+  // directly — pause it manually via the SVG's own animation API instead.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    const globeSvg = document.getElementById("globeSvg");
+    if (globeSvg && typeof globeSvg.pauseAnimations === "function") globeSvg.pauseAnimations();
+  }
+
   /* -----------------------------------------------------------------
      Global: close modals with Escape
      ----------------------------------------------------------------- */

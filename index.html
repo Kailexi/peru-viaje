@@ -52,6 +52,28 @@
 
   <!-- ============ HERO / COUNTDOWN STAMP ============ -->
   <section class="hero" id="hero">
+    <svg id="globeSvg" class="globe" viewBox="0 0 180 180" aria-hidden="true">
+      <circle class="globe-line" cx="90" cy="90" r="86"/>
+      <ellipse class="globe-line" cx="90" cy="90" rx="34" ry="86"/>
+      <ellipse class="globe-line" cx="90" cy="90" rx="86" ry="30"/>
+      <ellipse class="globe-line" cx="90" cy="90" rx="86" ry="58"/>
+
+      <path id="globeRoute" class="globe-route" d="M 128 42 Q 150 92, 58 132"/>
+
+      <circle class="globe-dot" cx="128" cy="42" r="4"/>
+      <text class="globe-label" x="136" y="38">RUSIA</text>
+
+      <circle class="globe-dot" cx="58" cy="132" r="4"/>
+      <text class="globe-label" x="6" y="150">PERÚ</text>
+
+      <g class="globe-plane">
+        <path d="M0 -5 L4 3 L1 3 L1 6 L-1 6 L-1 3 L-4 3 Z"/>
+        <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
+          <mpath href="#globeRoute"/>
+        </animateMotion>
+      </g>
+    </svg>
+
     <p class="hero-eyebrow">PARA</p>
     <h1 class="hero-title">Tanya</h1>
     <p class="hero-sub">un puñado de notas de viaje antes de que el Perú te reciba</p>

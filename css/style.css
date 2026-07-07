@@ -90,6 +90,48 @@ body {
 
 main, header, footer, .modal-backdrop { position: relative; z-index: 1; }
 
+/* ---------------- Little wireframe globe (Rusia → Perú route) ---------------- */
+
+.globe {
+  position: absolute;
+  top: 6px;
+  right: clamp(4px, 3vw, 28px);
+  width: clamp(90px, 14vw, 150px);
+  height: auto;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.globe-line {
+  fill: none;
+  stroke: var(--ink-green);
+  stroke-width: 1.2;
+  opacity: 0.4;
+}
+.globe-route {
+  fill: none;
+  stroke: var(--stamp-red);
+  stroke-width: 1.5;
+  stroke-dasharray: 3 6;
+  opacity: 0.8;
+  animation: flow-dash 4s linear infinite;
+}
+.globe-dot { fill: var(--stamp-red); }
+.globe-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  fill: var(--text-soft);
+}
+.globe-plane path { fill: var(--ink-green); }
+
+@media (prefers-reduced-motion: reduce) {
+  .globe-route { animation: none; }
+}
+
+@media (max-width: 560px) {
+  .globe { display: none; }
+}
+
 /* ---------------- Header ---------------- */
 
 .site-header {
@@ -149,6 +191,7 @@ main, header, footer, .modal-backdrop { position: relative; z-index: 1; }
 /* ---------------- Hero / stamp ---------------- */
 
 .hero {
+  position: relative;
   max-width: var(--max-width);
   margin: 0 auto;
   padding: clamp(40px, 8vw, 72px) clamp(16px, 5vw, 48px) 24px;
