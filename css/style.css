@@ -74,10 +74,19 @@ body {
   stroke-width: 1.5;
   stroke-dasharray: 2 10;
   stroke-linecap: round;
+  animation: flow-dash 8s linear infinite;
 }
 .flight-line--2 { stroke: var(--gold); }
+.flight-line--vertical { stroke-dasharray: 2 16; opacity: 0.6; }
 .flight-dot { fill: var(--stamp-red); opacity: 0.7; }
 .flight-dot--2 { fill: var(--ink-green); }
+
+@keyframes flow-dash {
+  to { stroke-dashoffset: -120; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flight-line { animation: none; }
+}
 
 main, header, footer, .modal-backdrop { position: relative; z-index: 1; }
 
@@ -259,11 +268,22 @@ main, header, footer, .modal-backdrop { position: relative; z-index: 1; }
   margin-top: 6px;
 }
 
+.date-picker-shell {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+
 .date-picker-form {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
+  background: var(--paper-deep);
+  border: 1.5px dashed var(--gold);
+  border-radius: var(--radius-soft);
+  padding: 18px 26px 20px;
+  max-width: 280px;
 }
 .date-picker-form label {
   font-family: var(--font-mono);
@@ -274,8 +294,8 @@ main, header, footer, .modal-backdrop { position: relative; z-index: 1; }
 .date-picker-form input[type="date"] {
   font-family: var(--font-mono);
   border: 1px solid var(--ink-green);
-  background: var(--paper);
-  padding: 6px 8px;
+  background: #fff;
+  padding: 7px 9px;
   border-radius: var(--radius-soft);
   color: var(--text);
 }
@@ -284,18 +304,19 @@ main, header, footer, .modal-backdrop { position: relative; z-index: 1; }
   background: var(--ink-green);
   color: var(--cream-on-green);
   border: none;
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: var(--radius-soft);
   cursor: pointer;
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   letter-spacing: 0.05em;
 }
 .date-picker-form button:hover { background: var(--ink-green-dk); }
 .date-picker-hint {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: var(--text-soft);
   margin: 2px 0 0;
-  max-width: 22ch;
+  max-width: 26ch;
+  text-align: center;
 }
 
 .hero-note {
@@ -698,6 +719,35 @@ main, header, footer, .modal-backdrop { position: relative; z-index: 1; }
   font-size: 0.7rem;
   letter-spacing: 0.04em;
   margin: 0;
+}
+
+/* ---------------- Scroll reveal ---------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---------------- Paper plane (notes button micro-interaction) ---------------- */
+
+.paper-plane {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  color: var(--ink-green);
+  pointer-events: none;
+  z-index: 40;
+  will-change: transform, opacity;
 }
 
 /* ---------------- Focus visibility ---------------- */

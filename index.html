@@ -21,6 +21,8 @@
   <svg viewBox="0 0 1440 1400" preserveAspectRatio="xMidYMid slice">
     <path class="flight-line" d="M -50 200 Q 300 50, 600 300 T 1200 250 T 1550 500" />
     <path class="flight-line flight-line--2" d="M -80 900 Q 250 1050, 500 850 T 1100 1000 T 1500 850" />
+    <path class="flight-line flight-line--vertical" d="M 120 -50 L 120 1450" />
+    <path class="flight-line flight-line--vertical flight-line--2" d="M 1320 -50 L 1320 1450" />
     <circle class="flight-dot" cx="-50" cy="200" r="5"/>
     <circle class="flight-dot flight-dot--2" cx="1550" cy="500" r="5"/>
   </svg>
@@ -83,25 +85,29 @@
           <p>¡Buen viaje!</p>
           <p class="arrived-sub">ya estás en Perú, rayito ☀️</p>
         </div>
-
-        <!-- Shown only once, before a departure date has ever been set -->
-        <form id="datePickerForm" class="date-picker-form" hidden>
-          <label for="departureInput">elige tu fecha de vuelo</label>
-          <input type="date" id="departureInput" required>
-          <button type="submit">Guardar fecha</button>
-          <p class="date-picker-hint">solo se puede fijar una vez — ¡elígela con cariño!</p>
-        </form>
       </div>
+    </div>
+
+    <!-- Shown only once, before a departure date has ever been set.
+         Lives below the stamp (not inside it) so the circle only ever
+         has to fit the countdown digits, regardless of screen size. -->
+    <div class="date-picker-shell">
+      <form id="datePickerForm" class="date-picker-form" hidden>
+        <label for="departureInput">elige tu fecha de vuelo</label>
+        <input type="date" id="departureInput" required>
+        <button type="submit">Guardar fecha</button>
+        <p class="date-picker-hint">solo se puede fijar una vez — ¡elígela con cariño!</p>
+      </form>
     </div>
     <p class="hero-note" id="dateSourceNote"></p>
   </section>
 
   <!-- ============ BEFORE / AFTER PHOTOS ============ -->
   <section class="photos" id="photos">
-    <div class="section-stamp" aria-hidden="true">ANTES · DESPUÉS</div>
-    <h2 class="section-title">Cómo has crecido</h2>
+    <div class="section-stamp reveal" aria-hidden="true">ANTES · DESPUÉS</div>
+    <h2 class="section-title reveal">Cómo has crecido</h2>
 
-    <div class="slider-shell">
+    <div class="slider-shell reveal">
       <div class="ba-empty" id="baEmpty">
         <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
           <rect x="4" y="10" width="40" height="30" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -187,7 +193,7 @@
   </aside>
 </div>
 
-<footer class="site-footer">
+<footer class="site-footer reveal">
   <svg class="compass-mark compass-mark--small" viewBox="0 0 60 60" aria-hidden="true">
     <circle cx="30" cy="30" r="27" fill="none" stroke="currentColor" stroke-width="1.5"/>
     <path d="M30 8 L34 30 L30 52 L26 30 Z" fill="currentColor" opacity="0.85"/>

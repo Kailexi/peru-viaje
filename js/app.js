@@ -446,8 +446,49 @@
       }
     );
 
+  function launchPaperPlane(fromEl, toEl) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const from = fromEl.getBoundingClientRect();
+    const to = toEl.getBoundingClientRect();
+    const startX = from.left + from.width / 2;
+    const startY = from.top + from.height / 2;
+    const endX = to.left + Math.min(to.width * 0.35, 140);
+    const endY = to.top + 40;
+
+    const plane = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    plane.setAttribute("viewBox", "0 0 24 24");
+    plane.classList.add("paper-plane");
+    plane.innerHTML =
+      '<path d="M2 12 L21 3 L14 21 L11 13 L2 12 Z" fill="currentColor" opacity="0.9"/>' +
+      '<path d="M11 13 L21 3" stroke="#EDE3CF" stroke-width="1" fill="none"/>';
+    document.body.appendChild(plane);
+
+    const dx = endX - startX;
+    const dy = endY - startY;
+    const angle = (Math.atan2(dy, dx) * 180) / Math.PI;
+
+    plane.style.transform = `translate(${startX}px, ${startY}px) rotate(${angle}deg)`;
+    plane.style.opacity = "1";
+
+    const anim = plane.animate(
+      [
+        { transform: `translate(${startX}px, ${startY}px) rotate(${angle}deg) scale(0.6)`, opacity: 0.9 },
+        {
+          transform: `translate(${startX + dx * 0.5}px, ${startY + dy * 0.5 - 40}px) rotate(${angle - 8}deg) scale(1)`,
+          opacity: 1,
+          offset: 0.6
+        },
+        { transform: `translate(${endX}px, ${endY}px) rotate(${angle + 4}deg) scale(0.5)`, opacity: 0 }
+      ],
+      { duration: 650, easing: "cubic-bezier(.3,.6,.4,1)" }
+    );
+    anim.onfinish = () => plane.remove();
+  }
+
   openNotesBtn.addEventListener("click", () => {
     openModal(notesBackdrop);
+    launchPaperPlane(openNotesBtn, notesPanel);
     envelopeDot.hidden = true;
   });
   closeNotes.addEventListener("click", () => closeModal(notesBackdrop));
@@ -483,6 +524,27 @@
         submitBtn.disabled = false;
       });
   });
+
+  /* -----------------------------------------------------------------
+     Scroll reveal — gentle fade/slide-in as sections enter view
+     ----------------------------------------------------------------- */
+  const revealEls = document.querySelectorAll(".reveal");
+  if (revealEls.length && "IntersectionObserver" in window) {
+    const revealObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            revealObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15, rootMargin: "0px 0px -40px 0px" }
+    );
+    revealEls.forEach((el) => revealObserver.observe(el));
+  } else {
+    revealEls.forEach((el) => el.classList.add("is-visible"));
+  }
 
   /* -----------------------------------------------------------------
      Global: close modals with Escape
