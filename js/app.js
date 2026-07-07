@@ -11,9 +11,6 @@
 (function () {
   "use strict";
 
-  /* =================================================================
-     SHARED HELPERS
-     ================================================================= */
 
   function openModal(backdrop) {
     if (backdrop) backdrop.hidden = false;
@@ -22,8 +19,6 @@
     if (backdrop) backdrop.hidden = true;
   }
 
-  // Client-side resize/compression so Cloudinary's free tier isn't
-  // strained by full-resolution phone photos.
   function resizeImage(file, maxDim, quality) {
     maxDim = maxDim || 1600;
     quality = quality || 0.82;
@@ -87,9 +82,6 @@
     return a;
   }
 
-  /* =================================================================
-     SECTION: HERO — Feature 1 (countdown)
-     ================================================================= */
 
   function initHero() {
     const SETTINGS_DOC = db.collection("settings").doc("departureDate");
@@ -313,9 +305,7 @@
     });
   }
 
-  /* =================================================================
-     SECTION: BEFORE / AFTER SLIDER — (original Feature 2)
-     ================================================================= */
+
 
   function initBeforeAfter() {
     let allPairs = [];
@@ -518,13 +508,7 @@
     loadUploadedPairs();
   }
 
-  /* =================================================================
-     SECTION: TRIP POLAROIDS — Feature 4 (replaces the during-trip grid)
-     Up to 21 uploadable polaroids; 3–4 visible at a time in a
-     horizontal scroller with arrow controls beneath. Frames auto-fit
-     each photo's own aspect ratio (no forced crop). Same Cloudinary +
-     Firestore (`duringPhotos`) flow as before.
-     ================================================================= */
+
 
   const TRIP_PHOTO_LIMIT = 21;
   const TRIP_TILTS = [-1.5, 1.1, -0.7, 1.6, -1.1, 0.8, -0.4];
@@ -719,9 +703,6 @@
     loadDuringPhotos();
   }
 
-  /* =================================================================
-     FRIEND NOTES PANEL — (original Feature 3; static header/overlay)
-     ================================================================= */
 
   function initNotesPanel() {
     const openNotesBtn = document.getElementById("openNotesBtn");
@@ -869,9 +850,6 @@
     });
   }
 
-  /* =================================================================
-     GLOBAL — Escape closes any open modal
-     ================================================================= */
 
   function initGlobal() {
     document.addEventListener("keydown", function (e) {
@@ -882,10 +860,7 @@
     });
   }
 
-  /* =================================================================
-     REGISTER SECTIONS with the loader (js/sections.js). The three
-     "chapters" are `tracked`, so they each get a scroll-progress dot.
-     ================================================================= */
+
 
   if (window.SiteSections) {
     window.SiteSections.register("hero", { init: initHero });

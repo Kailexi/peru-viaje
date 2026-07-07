@@ -1,26 +1,3 @@
-/* ===================================================================
-   Notas de Viaje para un Rayito de Sol — sections.js
-   ------------------------------------------------------------------
-   The site's little "section engine". Every visible chapter of the
-   page is now MOUNTED here rather than hard-typed inside <main>:
-
-     • Section markup lives in <template data-section="…"> blocks in
-       index.html (kept as HTML so it stays translatable via data-i18n).
-     • Each feature in app.js REGISTERS itself with an init() (and an
-       optional `tracked` flag) through window.SiteSections.register().
-     • On load, we clone every template in SECTION_ORDER into #appRoot,
-       apply the current language, then run each section's init().
-
-   New sections (Meet Our Traveller, the notes marquee, …) appear the
-   exact same way as the original ones — that's the whole point.
-
-   This file also owns two cross-section behaviours that need to run
-   AFTER sections are mounted:
-     • the scroll-progress dots on the mid-left (Feature 2), built from
-       whichever sections registered as `tracked`.
-     • the gentle scroll-reveal fade, and the dashed "trail" connectors
-       drawn between cards (reused by Meet Our Traveller).
-   =================================================================== */
 
 (function () {
   "use strict";
@@ -103,12 +80,7 @@
     document.dispatchEvent(new CustomEvent("sectionsloaded", { detail: { mounted: mounted } }));
   }
 
-  /* -----------------------------------------------------------------
-     FEATURE 2 — Scroll-progress dots (fixed mid-left)
-     One pill per `tracked` section; the pill for whichever tracked
-     section currently owns the viewport fills in (animated). Clicking
-     a dot scrolls to its section.
-     ----------------------------------------------------------------- */
+
   function buildScrollProgress(trackedSections) {
     const nav = document.getElementById("scrollProgress");
     if (!nav || trackedSections.length === 0) return;
@@ -167,11 +139,7 @@
     }
   }
 
-  /* -----------------------------------------------------------------
-     Scroll-reveal — fade/slide-in as .reveal elements enter view.
-     Lives here (not app.js) so it can observe sections that were
-     mounted dynamically a moment ago.
-     ----------------------------------------------------------------- */
+
   function initReveal(root) {
     const els = (root || document).querySelectorAll(".reveal");
     if (els.length && "IntersectionObserver" in window) {
@@ -196,14 +164,7 @@
     }
   }
 
-  /* -----------------------------------------------------------------
-     Dashed "trail" connectors — the same flight-path dotted line used
-     across the site, drawn BETWEEN a set of cards. Given a container
-     and a child selector, it lays an SVG overlay behind the cards and
-     joins each card to the next with a dashed segment. Recomputes on
-     resize and once images have loaded (sizes can shift).
-     Exposed so Meet Our Traveller (and anything later) can reuse it.
-     ----------------------------------------------------------------- */
+
   function connectTrail(container, itemSelector) {
     if (!container) return function () {};
 
