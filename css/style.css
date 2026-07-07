@@ -919,3 +919,293 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   .modal-backdrop { padding: 0; }
   .notes-panel { max-height: 100%; height: 100%; border-radius: 0; }
 }
+
+/* ===================================================================
+   FEATURE ADDITIONS
+   Scroll-progress dots · polaroids · dashed trail · notes marquee ·
+   uploadable trip polaroids. All built on the existing token system.
+   =================================================================== */
+
+/* ---------------- Feature 2 · Scroll-progress dots (mid-left) ------ */
+
+.scroll-progress {
+  position: fixed;
+  left: clamp(6px, 2vw, 22px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+.scroll-progress[hidden] { display: none; }
+
+/* A little vertical "passport pill" that inks in as you reach its
+   section — echoing the stamp motif rather than a plain dot. */
+.progress-dot {
+  --fill: 0;
+  width: 15px;
+  height: 30px;
+  padding: 0;
+  border: 1.5px solid var(--ink-green);
+  border-radius: 999px;
+  background:
+    linear-gradient(to top, var(--ink-green) 0%, var(--ink-green) 100%) bottom / 100% calc(var(--fill) * 100%) no-repeat,
+    rgba(237, 227, 207, 0.55);
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-size 0.45s cubic-bezier(.4,.6,.3,1);
+}
+.progress-dot::after {
+  content: "";
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--stamp-red);
+  opacity: 0.75;
+  transition: background 0.3s ease, opacity 0.3s ease;
+}
+.progress-dot.is-filled {
+  --fill: 1;
+  box-shadow: 0 3px 10px -3px rgba(31, 51, 42, 0.5);
+}
+.progress-dot.is-filled::after { background: var(--paper); opacity: 0.95; }
+.progress-dot:hover { transform: scale(1.08); }
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-dot { transition: none; }
+}
+@media (max-width: 460px) {
+  .scroll-progress { gap: 10px; }
+  .progress-dot { width: 12px; height: 24px; }
+}
+
+/* ---------------- Shared polaroid frame ---------------------------- */
+
+.polaroid {
+  margin: 0;
+  background: #fff;
+  padding: 10px 10px 0;
+  outline: 1px solid var(--paper-line);
+  border-radius: var(--radius-soft);
+  box-shadow: 0 12px 26px -14px rgba(43, 35, 26, 0.45);
+  transform: rotate(var(--tilt, 0deg));
+}
+.polaroid > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--paper-deep);
+}
+.polaroid-caption {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text-soft);
+  text-align: center;
+  padding: 9px 6px 13px;
+  margin: 0;
+}
+
+/* ---------------- Feature 1 · Meet our traveller ------------------- */
+
+.traveller-trail {
+  position: relative;
+  max-width: 560px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(30px, 6vw, 54px);
+  padding: 8px 0 4px;
+}
+
+/* The dashed connectors are an SVG overlay drawn by js/sections.js. */
+.trail-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+.trail-line {
+  fill: none;
+  stroke: var(--text-soft);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 9;
+  stroke-linecap: round;
+  opacity: 0.65;
+  animation: flow-dash 9s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { .trail-line { animation: none; } }
+
+.polaroid-wish {
+  position: relative;
+  z-index: 1;
+  width: min(66%, 300px);
+}
+/* Alternate side + tilt so the trail feels hand-placed, not stacked. */
+.traveller-trail .polaroid-wish:nth-child(odd)  { align-self: flex-start; --tilt: -2.4deg; }
+.traveller-trail .polaroid-wish:nth-child(even) { align-self: flex-end;   --tilt:  2.1deg; }
+.traveller-trail .polaroid-wish:nth-child(4n+3) { --tilt: -1.4deg; }
+.traveller-trail .polaroid-wish:nth-child(4n)   { --tilt:  1.5deg; }
+
+.meet-traveller .polaroid-caption {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--text);
+  padding: 11px 8px 16px;
+}
+
+@media (max-width: 460px) {
+  .polaroid-wish { width: 82%; }
+}
+
+/* ---------------- Feature 5 · Notes marquee ----------------------- */
+
+.notes-marquee-section {
+  margin: 8px 0 12px;
+  padding: 20px 0;
+  border-top: 1px dashed var(--paper-line);
+  border-bottom: 1px dashed var(--paper-line);
+  background: rgba(227, 213, 184, 0.28);
+}
+.marquee-viewport {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll 42s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+.marquee-set {
+  display: flex;
+  gap: 16px;
+  padding-right: 16px;
+  flex: 0 0 auto;
+}
+.marquee-note {
+  flex: 0 0 auto;
+  max-width: 300px;
+  background: var(--paper);
+  border: 1px solid var(--paper-line);
+  border-radius: 2px;
+  box-shadow: 0 2px 5px rgba(43, 35, 26, 0.12);
+  padding: 10px 14px;
+  transform: rotate(var(--n-tilt, -0.5deg));
+}
+.marquee-note:nth-child(even) { --n-tilt: 0.6deg; }
+.marquee-note-msg {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text);
+  margin: 0 0 3px;
+}
+.marquee-note-name {
+  font-family: var(--font-stamp);
+  font-size: 0.72rem;
+  color: var(--ink-green);
+  margin: 0;
+  text-align: right;
+}
+.marquee-empty {
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-soft);
+  margin: 0;
+}
+@keyframes marquee-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; flex-wrap: wrap; justify-content: center; }
+  .marquee-viewport { -webkit-mask-image: none; mask-image: none; }
+}
+
+/* ---------------- Feature 4 · Uploadable trip polaroids ------------ */
+
+.trip-shell { max-width: 760px; margin: 0 auto; }
+
+.trip-empty {
+  font-family: var(--font-body);
+  font-style: italic;
+  color: var(--text-soft);
+  margin: 0 0 14px;
+}
+
+.trip-scroller {
+  display: flex;
+  gap: clamp(14px, 3vw, 22px);
+  align-items: flex-start;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 14px 6px 22px;
+  scrollbar-width: thin;
+}
+.trip-scroller::-webkit-scrollbar { height: 6px; }
+.trip-scroller::-webkit-scrollbar-thumb {
+  background: var(--paper-line);
+  border-radius: 999px;
+}
+
+.trip-polaroid {
+  flex: 0 0 clamp(150px, 42vw, 184px);
+  scroll-snap-align: center;
+}
+.trip-polaroid > img { max-height: 320px; object-fit: cover; }
+
+/* The trailing "add a photo" slot — an empty dashed polaroid. */
+button.trip-add-slot {
+  cursor: pointer;
+  font: inherit;
+  color: var(--text-soft);
+  outline: 1px dashed var(--gold);
+  box-shadow: none;
+  transition: color 0.15s ease, outline-color 0.15s ease;
+}
+button.trip-add-slot:hover { color: var(--ink-green); outline-color: var(--ink-green); }
+.trip-add-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  aspect-ratio: 4 / 5;
+  background: var(--paper-deep);
+  border-radius: 2px;
+}
+.trip-add-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  max-width: 14ch;
+  text-align: center;
+  line-height: 1.3;
+}
+
+.trip-controls { margin-top: 4px; }
+.trip-counter {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-soft);
+  min-width: 8ch;
+  text-align: center;
+}
+.trip-full-note {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--gold);
+  margin: 10px 0 0;
+}

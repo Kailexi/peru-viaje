@@ -85,6 +85,20 @@ const TRANSLATIONS = {
     notesLoadError: "no se pudieron cargar las notas.",
     aFriend: "Un amigo",
 
+    meetStamp: "NUESTRA VIAJERA",
+    meetTitle: "Conoce a nuestra viajera",
+    meetWish1: "Que tengas un viaje seguro, de principio a fin. ✈️",
+    meetWish2: "Que en el camino te encuentres a ti misma y a tu espíritu.",
+    meetWish3: "Que sigas siendo el rayito de sol amable y luminoso que ya eres. ☀️",
+    meetWish4: "Y mucha suerte en tus estudios en Perú. 📚",
+
+    marqueeEmpty: "aún no hay notas para mostrar",
+
+    prevPhotoAria: "Fotos anteriores",
+    nextPhotoAria: "Fotos siguientes",
+    tripCounter: "{n} / {max} fotos",
+    tripFullNote: "ya están las 21 fotos — ¡el rollo está completo!",
+
     footerText: "hecho a mano, con cariño, para tu vuelta al mundo",
 
     dateSaveError: "No se pudo guardar la fecha. Intenta de nuevo.",
@@ -163,6 +177,20 @@ const TRANSLATIONS = {
     notesLoadError: "couldn't load the notes.",
     aFriend: "A friend",
 
+    meetStamp: "OUR TRAVELLER",
+    meetTitle: "Meet our traveller",
+    meetWish1: "Wishing you safe travels, from takeoff to touchdown. ✈️",
+    meetWish2: "May you find yourself, and your spirit, along the way.",
+    meetWish3: "Stay the kind, bright ray of sunshine you already are. ☀️",
+    meetWish4: "And the best of luck in your studies in Peru. 📚",
+
+    marqueeEmpty: "no notes to show yet",
+
+    prevPhotoAria: "Previous photos",
+    nextPhotoAria: "Next photos",
+    tripCounter: "{n} / {max} photos",
+    tripFullNote: "all 21 photos are in — the roll is full!",
+
     footerText: "made by hand, with love, for your trip around the world",
 
     dateSaveError: "Couldn't save the date. Try again.",
@@ -240,6 +268,20 @@ const TRANSLATIONS = {
     notesEmpty: "записок пока нет — стань первым, кто напишет!",
     notesLoadError: "не удалось загрузить записки.",
     aFriend: "Друг",
+
+    meetStamp: "НАША ПУТЕШЕСТВЕННИЦА",
+    meetTitle: "Знакомьтесь — наша путешественница",
+    meetWish1: "Пусть твоя дорога будет безопасной от взлёта до посадки. ✈️",
+    meetWish2: "Пусть в пути ты найдёшь себя и свой дух.",
+    meetWish3: "Оставайся тем добрым, светлым лучиком солнца, которым ты уже есть. ☀️",
+    meetWish4: "И удачи в учёбе в Перу. 📚",
+
+    marqueeEmpty: "записок для показа пока нет",
+
+    prevPhotoAria: "Предыдущие фото",
+    nextPhotoAria: "Следующие фото",
+    tripCounter: "{n} / {max} фото",
+    tripFullNote: "все 21 фото на месте — плёнка заполнена!",
 
     footerText: "сделано вручную, с любовью, для твоего путешествия по миру",
 

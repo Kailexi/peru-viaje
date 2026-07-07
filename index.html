@@ -28,6 +28,9 @@
   </svg>
 </div>
 
+<!-- ============ SCROLL-PROGRESS DOTS (mid-left, filled by js/sections.js) ============ -->
+<nav class="scroll-progress" id="scrollProgress" aria-label="Progreso de la página" hidden></nav>
+
 <!-- ============ LANGUAGE SWITCHER (bottom-left, flag toggle) ============ -->
 <div class="lang-switch" id="langSwitch" role="group" aria-label="Elegir idioma / Choose language / Выбрать язык">
   <button type="button" class="lang-btn" data-lang="es" aria-label="Español" title="Español">
@@ -61,31 +64,29 @@
   </div>
 </header>
 
-<main>
+<!-- ============================================================= -->
+<!-- Sections are MOUNTED into #appRoot by js/sections.js, in the   -->
+<!-- order defined there. Each lives in a <template> below so it    -->
+<!-- stays translatable (data-i18n) yet loads through one flow.     -->
+<!-- ============================================================= -->
+<main id="appRoot"></main>
 
-  <!-- ============ HERO / COUNTDOWN STAMP ============ -->
+<!-- ===================== SECTION TEMPLATES ===================== -->
+
+<!-- HERO / COUNTDOWN STAMP -->
+<template data-section="hero">
   <section class="hero" id="hero">
     <svg id="globeSvg" class="globe" viewBox="0 0 180 180" aria-hidden="true">
       <circle class="globe-line" cx="90" cy="90" r="86"/>
       <ellipse class="globe-line" cx="90" cy="90" rx="34" ry="86"/>
       <ellipse class="globe-line" cx="90" cy="90" rx="86" ry="30"/>
       <ellipse class="globe-line" cx="90" cy="90" rx="86" ry="58"/>
-
       <path id="globeRoute" class="globe-route" d="M 128 42 Q 150 92, 58 132"/>
-
       <circle class="globe-dot" cx="128" cy="42" r="4"/>
       <text class="globe-label" x="136" y="38">RUSIA</text>
-
       <circle class="globe-dot" cx="58" cy="132" r="4"/>
       <text class="globe-label" x="6" y="150">PERÚ</text>
-
       <g class="globe-plane">
-        <!-- Nose points along +x (rightward) at rotate=0, because SMIL's
-             rotate="auto" aligns the shape's local +x axis to the path's
-             tangent direction. The old artwork had its nose pointing -y
-             (up), a 90° mismatch with what rotate="auto" expects — that's
-             why the plane looked like it was flying sideways instead of
-             banking along the Rusia→Perú curve. -->
         <path d="M5 0 L-3 4 L-3 1 L-6 1 L-6 -1 L-3 -1 L-3 -4 Z"/>
         <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
           <mpath href="#globeRoute"/>
@@ -129,9 +130,6 @@
       </div>
     </div>
 
-    <!-- Shown only once, before a departure date has ever been set.
-         Lives below the stamp (not inside it) so the circle only ever
-         has to fit the countdown digits, regardless of screen size. -->
     <div class="date-picker-shell">
       <form id="datePickerForm" class="date-picker-form" hidden>
         <label for="departureInput" data-i18n="datePickerLabel">elige tu fecha de vuelo</label>
@@ -142,8 +140,48 @@
     </div>
     <p class="hero-note" id="dateSourceNote"></p>
   </section>
+</template>
 
-  <!-- ============ BEFORE THE TRIP: BEFORE/AFTER PHOTOS ============ -->
+<!-- MEET OUR TRAVELLER (Feature 1) -->
+<template data-section="meetTraveller">
+  <section class="photos meet-traveller" id="meetTraveller">
+    <div class="section-stamp reveal" aria-hidden="true" data-i18n="meetStamp">NUESTRA VIAJERA</div>
+    <h2 class="section-title reveal" data-i18n="meetTitle">Conoce a nuestra viajera</h2>
+
+    <div class="traveller-trail reveal">
+      <figure class="polaroid polaroid-wish">
+        <!-- PLACEHOLDER photo — swap assets/traveller-1.jpg for a real one -->
+        <img src="assets/traveller-1.jpg" alt="" loading="lazy">
+        <figcaption class="polaroid-caption" data-i18n="meetWish1">Que tengas un viaje seguro, de principio a fin.</figcaption>
+      </figure>
+      <figure class="polaroid polaroid-wish">
+        <img src="assets/traveller-2.jpg" alt="" loading="lazy">
+        <figcaption class="polaroid-caption" data-i18n="meetWish2">Que en el camino te encuentres a ti misma y a tu espíritu.</figcaption>
+      </figure>
+      <figure class="polaroid polaroid-wish">
+        <img src="assets/traveller-3.jpg" alt="" loading="lazy">
+        <figcaption class="polaroid-caption" data-i18n="meetWish3">Que sigas siendo el rayito de sol amable y luminoso que ya eres.</figcaption>
+      </figure>
+      <figure class="polaroid polaroid-wish">
+        <img src="assets/traveller-4.jpg" alt="" loading="lazy">
+        <figcaption class="polaroid-caption" data-i18n="meetWish4">Y mucha suerte en tus estudios en Perú.</figcaption>
+      </figure>
+    </div>
+  </section>
+</template>
+
+<!-- SCROLLING NOTES / MESSAGES MARQUEE (Feature 5) -->
+<template data-section="notesMarquee">
+  <section class="notes-marquee-section" id="notesMarquee" aria-label="Notas que se desplazan">
+    <div class="marquee-viewport">
+      <div class="marquee-track" hidden></div>
+      <p class="marquee-empty" hidden></p>
+    </div>
+  </section>
+</template>
+
+<!-- BEFORE THE TRIP: BEFORE/AFTER PHOTOS -->
+<template data-section="photosBefore">
   <section class="photos" id="photosBefore">
     <div class="section-stamp reveal" aria-hidden="true" data-i18n="beforeStamp">ANTES DEL VIAJE</div>
     <h2 class="section-title reveal" data-i18n="beforeTitle">Cómo has crecido</h2>
@@ -187,33 +225,30 @@
       </button>
     </div>
   </section>
+</template>
 
-  <!-- ============ DURING THE TRIP: PHOTO GALLERY ============ -->
+<!-- DURING THE TRIP: UPLOADABLE POLAROIDS (Feature 4) -->
+<template data-section="photosDuring">
   <section class="photos photos-during" id="photosDuring">
     <div class="section-stamp reveal" aria-hidden="true" data-i18n="duringStamp">DURANTE EL VIAJE</div>
     <h2 class="section-title reveal" data-i18n="duringTitle">El viaje en fotos</h2>
 
-    <div class="gallery-shell reveal">
-      <div class="gallery-empty" id="duringEmpty">
-        <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
-          <rect x="4" y="10" width="40" height="30" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
-          <circle cx="15" cy="20" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
-          <path d="M4 34 L16 24 L24 30 L32 20 L44 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        <p data-i18n="duringEmptyText">aún no hay fotos del viaje</p>
-        <p class="ba-empty-sub" data-i18n="duringEmptySub">las fotos que subas aquí aparecerán para todos los que abran este sitio</p>
+    <div class="trip-shell reveal">
+      <p class="trip-empty" data-i18n="duringEmptyText" hidden>aún no hay fotos del viaje</p>
+
+      <!-- Polaroids (and the trailing "add" slot) are injected here by app.js -->
+      <div class="trip-scroller" id="tripScroller"></div>
+
+      <div class="slider-controls trip-controls">
+        <button class="nav-arrow trip-prev" data-i18n-aria="prevPhotoAria" aria-label="Fotos anteriores">&#8592;</button>
+        <span class="trip-counter"></span>
+        <button class="nav-arrow trip-next" data-i18n-aria="nextPhotoAria" aria-label="Fotos siguientes">&#8594;</button>
       </div>
 
-      <div class="gallery-grid" id="duringGrid" hidden></div>
-
-      <button class="add-photo-btn" id="addDuringPhotoBtn" data-i18n-title="addDuringPhotoBtnTitle" title="Agregar una foto del viaje">
-        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5 L12 19 M5 12 L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        <span data-i18n="addDuringPhotoBtn">agregar foto del viaje</span>
-      </button>
+      <p class="trip-full-note" data-i18n="tripFullNote" hidden>ya están las 21 fotos — ¡el rollo está completo!</p>
     </div>
   </section>
-
-</main>
+</template>
 
 <!-- ============ ADD BEFORE/AFTER PAIR MODAL ============ -->
 <div class="modal-backdrop" id="addPhotoBackdrop" hidden>
@@ -295,6 +330,7 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/cloudinary-config.js"></script>
 <script src="js/i18n.js"></script>
+<script src="js/sections.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
