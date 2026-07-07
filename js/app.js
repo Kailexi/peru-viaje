@@ -2,6 +2,7 @@
    Notas de Viaje para un Rayito de Sol — app.js
    Firestore (`db`) comes from firebase-config.js. Image uploads go to
    Cloudinary instead of Firebase Storage — see cloudinary-config.js.
+   Translation strings/`t()` come from js/i18n.js (loaded before this file).
    =================================================================== */
 
 (function () {
@@ -46,6 +47,10 @@
   // Set a sane min date for the picker (today).
   departureInput.min = new Date().toISOString().split("T")[0];
 
+  function refreshDateSourceNote() {
+    dateSourceNote.textContent = dateIsLocked ? "" : t("dateSourceNote");
+  }
+
   function startCountdown() {
     countdownView.hidden = false;
     if (countdownTimer) clearInterval(countdownTimer);
@@ -84,19 +89,19 @@
           departureDate = new Date(doc.data().date);
           dateIsLocked = true;
           datePickerForm.hidden = true;
-          dateSourceNote.textContent = "";
         } else {
           // Nobody has picked a date yet — show placeholder + picker.
           dateIsLocked = false;
           datePickerForm.hidden = false;
-          dateSourceNote.textContent = "(fecha provisional — aún sin confirmar)";
         }
+        refreshDateSourceNote();
         startCountdown();
       })
       .catch((err) => {
         console.error("No se pudo leer la fecha de salida:", err);
         // Fail safe: still show the placeholder countdown.
         datePickerForm.hidden = false;
+        refreshDateSourceNote();
         startCountdown();
       });
   }
@@ -129,20 +134,20 @@
         departureDate = new Date(finalDateIso);
         dateIsLocked = true;
         datePickerForm.hidden = true;
-        dateSourceNote.textContent = "";
+        refreshDateSourceNote();
         startCountdown();
       })
       .catch((err) => {
         console.error("Error guardando la fecha:", err);
         submitBtn.disabled = false;
-        alert("No se pudo guardar la fecha. Intenta de nuevo.");
+        alert(t("dateSaveError"));
       });
   });
 
   loadDeparture();
 
   /* -----------------------------------------------------------------
-     FEATURE 2 — BEFORE / AFTER PHOTO SLIDER
+     FEATURE 2 — BEFORE-THE-TRIP: BEFORE/AFTER PHOTO SLIDER
      ----------------------------------------------------------------- */
 
   // No pairs are preloaded in code. A "before/after" pair only makes
@@ -171,7 +176,7 @@
     allPairs.forEach((_, i) => {
       const dot = document.createElement("button");
       dot.className = "pair-dot" + (i === currentPairIndex ? " is-active" : "");
-      dot.setAttribute("aria-label", `Ver par ${i + 1}`);
+      dot.setAttribute("aria-label", `${i + 1}`);
       dot.addEventListener("click", () => showPair(i));
       pairDots.appendChild(dot);
     });
@@ -197,8 +202,8 @@
     // Keep the slider divider position stable, but reset image sizing.
     baBeforeImg.src = pair.before;
     baAfterImg.src = pair.after;
-    baBeforeImg.alt = "Antes";
-    baAfterImg.alt = "Después";
+    baBeforeImg.alt = t("tagBefore");
+    baAfterImg.alt = t("tagAfter");
     baCaption.textContent = pair.caption || "";
 
     syncClipImageSize();
@@ -277,7 +282,7 @@
   loadUploadedPairs();
 
   /* -----------------------------------------------------------------
-     ADD PHOTO UPLOAD MODAL
+     ADD BEFORE/AFTER PAIR UPLOAD MODAL
      ----------------------------------------------------------------- */
 
   const addPhotoBtn = document.getElementById("addPhotoBtn");
@@ -352,13 +357,13 @@
     if (!beforeFile || !afterFile) return;
 
     uploadPairBtn.disabled = true;
-    uploadStatus.textContent = "Procesando fotos...";
+    uploadStatus.textContent = t("uploadingPhotos");
 
     const stamp = Date.now();
 
     Promise.all([resizeImage(beforeFile), resizeImage(afterFile)])
       .then(([beforeBlob, afterBlob]) => {
-        uploadStatus.textContent = "Subiendo fotos...";
+        uploadStatus.textContent = t("uploadingPhotosUpload");
         return Promise.all([
           uploadToCloudinary(beforeBlob, `${stamp}-before.jpg`),
           uploadToCloudinary(afterBlob, `${stamp}-after.jpg`)
@@ -373,7 +378,7 @@
         });
       })
       .then(() => {
-        uploadStatus.textContent = "¡Listo! Tu par se agregó a la galería.";
+        uploadStatus.textContent = t("uploadPairSuccess");
         addPhotoForm.reset();
         currentPairIndex = Infinity; // clamps to the newest pair once reloaded
         loadUploadedPairs();
@@ -381,10 +386,122 @@
       })
       .catch((err) => {
         console.error("Error subiendo par de fotos:", err);
-        uploadStatus.textContent = "Algo falló al subir. Intenta de nuevo.";
+        uploadStatus.textContent = t("uploadPairError");
       })
       .finally(() => {
         uploadPairBtn.disabled = false;
+      });
+  });
+
+  /* -----------------------------------------------------------------
+     FEATURE 2b — DURING-THE-TRIP: SIMPLE PHOTO GALLERY
+     No before/after comparison here — just single photos as they come
+     in during the trip. Stored in Firestore's `duringPhotos` collection,
+     files hosted on Cloudinary just like the before/after pairs.
+     ----------------------------------------------------------------- */
+
+  let duringPhotos = [];
+
+  const duringEmpty = document.getElementById("duringEmpty");
+  const duringGrid = document.getElementById("duringGrid");
+
+  function renderDuringGrid() {
+    if (duringPhotos.length === 0) {
+      duringEmpty.hidden = false;
+      duringGrid.hidden = true;
+      duringGrid.innerHTML = "";
+      return;
+    }
+    duringEmpty.hidden = true;
+    duringGrid.hidden = false;
+    duringGrid.innerHTML = "";
+
+    duringPhotos.forEach((photo) => {
+      const figure = document.createElement("figure");
+      figure.className = "gallery-item";
+      const img = document.createElement("img");
+      img.src = photo.url;
+      img.alt = photo.caption || "";
+      img.loading = "lazy";
+      figure.appendChild(img);
+      if (photo.caption) {
+        const figcaption = document.createElement("figcaption");
+        figcaption.textContent = photo.caption;
+        figure.appendChild(figcaption);
+      }
+      duringGrid.appendChild(figure);
+    });
+  }
+
+  function loadDuringPhotos() {
+    db.collection("duringPhotos")
+      .orderBy("createdAt", "asc")
+      .get()
+      .then((snapshot) => {
+        const loaded = [];
+        snapshot.forEach((doc) => {
+          const d = doc.data();
+          if (d.url) loaded.push({ url: d.url, caption: d.caption || "" });
+        });
+        duringPhotos = loaded;
+        renderDuringGrid();
+      })
+      .catch((err) => {
+        console.error("No se pudieron cargar fotos del viaje:", err);
+      });
+  }
+
+  loadDuringPhotos();
+
+  const addDuringPhotoBtn = document.getElementById("addDuringPhotoBtn");
+  const addDuringPhotoBackdrop = document.getElementById("addDuringPhotoBackdrop");
+  const closeAddDuringPhoto = document.getElementById("closeAddDuringPhoto");
+  const addDuringPhotoForm = document.getElementById("addDuringPhotoForm");
+  const duringFileInput = document.getElementById("duringFileInput");
+  const duringCaptionInput = document.getElementById("duringCaptionInput");
+  const uploadDuringBtn = document.getElementById("uploadDuringBtn");
+  const uploadDuringStatus = document.getElementById("uploadDuringStatus");
+
+  addDuringPhotoBtn.addEventListener("click", () => openModal(addDuringPhotoBackdrop));
+  closeAddDuringPhoto.addEventListener("click", () => closeModal(addDuringPhotoBackdrop));
+  addDuringPhotoBackdrop.addEventListener("click", (e) => {
+    if (e.target === addDuringPhotoBackdrop) closeModal(addDuringPhotoBackdrop);
+  });
+
+  addDuringPhotoForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const file = duringFileInput.files[0];
+    if (!file) return;
+
+    uploadDuringBtn.disabled = true;
+    uploadDuringStatus.textContent = t("uploadingDuringPhoto");
+
+    const stamp = Date.now();
+
+    resizeImage(file)
+      .then((blob) => {
+        uploadDuringStatus.textContent = t("uploadingDuringPhotoUpload");
+        return uploadToCloudinary(blob, `${stamp}-during.jpg`);
+      })
+      .then((url) => {
+        return db.collection("duringPhotos").add({
+          url,
+          caption: duringCaptionInput.value.trim(),
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      })
+      .then(() => {
+        uploadDuringStatus.textContent = t("uploadDuringSuccess");
+        addDuringPhotoForm.reset();
+        loadDuringPhotos();
+        setTimeout(() => closeModal(addDuringPhotoBackdrop), 1200);
+      })
+      .catch((err) => {
+        console.error("Error subiendo foto del viaje:", err);
+        uploadDuringStatus.textContent = t("uploadDuringError");
+      })
+      .finally(() => {
+        uploadDuringBtn.disabled = false;
       });
   });
 
@@ -404,9 +521,15 @@
 
   const TILTS = [-1.2, 0.8, -0.4, 1.4, -0.9, 0.5];
 
+  // Keep the last snapshot around so a language switch can re-render
+  // the postcards (e.g. the "Un amigo" / "A friend" fallback name and
+  // the empty-state message) without waiting for another Firestore read.
+  let lastNotesSnapshot = null;
+
   function renderNotes(snapshot) {
+    lastNotesSnapshot = snapshot;
     if (snapshot.empty) {
-      notesList.innerHTML = '<p class="postcard-empty">aún no hay notas — ¡sé la primera persona en escribir!</p>';
+      notesList.innerHTML = `<p class="postcard-empty">${t("notesEmpty")}</p>`;
       return;
     }
     notesList.innerHTML = "";
@@ -418,7 +541,7 @@
       card.style.setProperty("--tilt", TILTS[i % TILTS.length] + "deg");
       const nameEl = document.createElement("p");
       nameEl.className = "postcard-name";
-      nameEl.textContent = "— " + (d.name || "Un amigo");
+      nameEl.textContent = "— " + (d.name || t("aFriend"));
       const msgEl = document.createElement("p");
       msgEl.className = "postcard-message";
       msgEl.textContent = d.message || "";
@@ -442,7 +565,7 @@
       },
       (err) => {
         console.error("Error escuchando notas:", err);
-        notesList.innerHTML = '<p class="postcard-empty">no se pudieron cargar las notas.</p>';
+        notesList.innerHTML = `<p class="postcard-empty">${t("notesLoadError")}</p>`;
       }
     );
 
@@ -504,7 +627,7 @@
 
     const submitBtn = noteForm.querySelector("button[type=submit]");
     submitBtn.disabled = true;
-    noteStatus.textContent = "Enviando...";
+    noteStatus.textContent = t("noteSending");
 
     db.collection("notes")
       .add({
@@ -513,16 +636,29 @@
         timestamp: firebase.firestore.FieldValue.serverTimestamp()
       })
       .then(() => {
-        noteStatus.textContent = "¡Nota enviada! Gracias.";
+        noteStatus.textContent = t("noteSentSuccess");
         noteForm.reset();
       })
       .catch((err) => {
         console.error("Error enviando nota:", err);
-        noteStatus.textContent = "No se pudo enviar. Intenta de nuevo.";
+        noteStatus.textContent = t("noteSentError");
       })
       .finally(() => {
         submitBtn.disabled = false;
       });
+  });
+
+  /* -----------------------------------------------------------------
+     Re-render dynamic (non data-i18n) text whenever the language
+     switcher changes languages.
+     ----------------------------------------------------------------- */
+  document.addEventListener("langchange", () => {
+    refreshDateSourceNote();
+    if (lastNotesSnapshot) renderNotes(lastNotesSnapshot);
+    if (allPairs.length) {
+      baBeforeImg.alt = t("tagBefore");
+      baAfterImg.alt = t("tagAfter");
+    }
   });
 
   /* -----------------------------------------------------------------
@@ -560,6 +696,7 @@
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       closeModal(addPhotoBackdrop);
+      closeModal(addDuringPhotoBackdrop);
       closeModal(notesBackdrop);
     }
   });

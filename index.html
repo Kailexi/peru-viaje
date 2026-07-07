@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Notas de Viaje para un Rayito de Sol</title>
-<meta name="description" content="Para Tanya, antes de su viaje a Perú.">
+<title id="pageTitle">Notas de Viaje para un Rayito de Sol</title>
+<meta name="description" id="pageDescription" content="Para Tanya, antes de su viaje a Perú.">
 
 <!-- Google Fonts: Fraunces (display), Rye (stamp/ink text), Vollkorn (body), Space Mono (numbers/labels) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,6 +28,19 @@
   </svg>
 </div>
 
+<!-- ============ LANGUAGE SWITCHER (bottom-left, flag toggle) ============ -->
+<div class="lang-switch" id="langSwitch" role="group" aria-label="Elegir idioma / Choose language / Выбрать язык">
+  <button type="button" class="lang-btn" data-lang="es" aria-label="Español" title="Español">
+    <span aria-hidden="true">🇪🇸</span>
+  </button>
+  <button type="button" class="lang-btn" data-lang="en" aria-label="English" title="English">
+    <span aria-hidden="true">🇬🇧</span>
+  </button>
+  <button type="button" class="lang-btn" data-lang="ru" aria-label="Русский" title="Русский">
+    <span aria-hidden="true">🇷🇺</span>
+  </button>
+</div>
+
 <!-- ============ HEADER ============ -->
 <header class="site-header">
   <div class="header-inner">
@@ -37,8 +50,8 @@
       <path d="M8 30 L30 26 L52 30 L30 34 Z" fill="currentColor" opacity="0.55"/>
       <circle cx="30" cy="30" r="2.5" fill="currentColor"/>
     </svg>
-    <p class="header-wordmark">Notas de Viaje</p>
-    <button class="envelope-btn" id="openNotesBtn" aria-haspopup="dialog" aria-controls="notesPanel" aria-label="Abrir notas de amigos">
+    <p class="header-wordmark" data-i18n="headerWordmark">Notas de Viaje</p>
+    <button class="envelope-btn" id="openNotesBtn" aria-haspopup="dialog" aria-controls="notesPanel" data-i18n-aria="envelopeAria" aria-label="Abrir notas de amigos">
       <svg viewBox="0 0 48 36" width="30" height="24">
         <rect x="1" y="1" width="46" height="34" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
         <path d="M2 3 L24 21 L46 3" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -67,16 +80,22 @@
       <text class="globe-label" x="6" y="150">PERÚ</text>
 
       <g class="globe-plane">
-        <path d="M0 -5 L4 3 L1 3 L1 6 L-1 6 L-1 3 L-4 3 Z"/>
+        <!-- Nose points along +x (rightward) at rotate=0, because SMIL's
+             rotate="auto" aligns the shape's local +x axis to the path's
+             tangent direction. The old artwork had its nose pointing -y
+             (up), a 90° mismatch with what rotate="auto" expects — that's
+             why the plane looked like it was flying sideways instead of
+             banking along the Rusia→Perú curve. -->
+        <path d="M5 0 L-3 4 L-3 1 L-6 1 L-6 -1 L-3 -1 L-3 -4 Z"/>
         <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
           <mpath href="#globeRoute"/>
         </animateMotion>
       </g>
     </svg>
 
-    <p class="hero-eyebrow">PARA</p>
+    <p class="hero-eyebrow" data-i18n="heroEyebrow">PARA</p>
     <h1 class="hero-title">Tanya</h1>
-    <p class="hero-sub">un puñado de notas de viaje antes de que el Perú te reciba</p>
+    <p class="hero-sub" data-i18n="heroSub">un puñado de notas de viaje antes de que el Perú te reciba</p>
 
     <div class="stamp-wrap" id="stampWrap">
       <svg class="stamp-badge" viewBox="0 0 320 320" aria-hidden="true">
@@ -95,17 +114,17 @@
       <div class="stamp-content">
         <div id="countdownView" class="countdown" hidden>
           <div class="countdown-grid">
-            <div class="countdown-cell"><span class="countdown-num" id="cdDays">00</span><span class="countdown-label">días</span></div>
-            <div class="countdown-cell"><span class="countdown-num" id="cdHours">00</span><span class="countdown-label">horas</span></div>
-            <div class="countdown-cell"><span class="countdown-num" id="cdMins">00</span><span class="countdown-label">min</span></div>
-            <div class="countdown-cell"><span class="countdown-num" id="cdSecs">00</span><span class="countdown-label">seg</span></div>
+            <div class="countdown-cell"><span class="countdown-num" id="cdDays">00</span><span class="countdown-label" data-i18n="unitDays">días</span></div>
+            <div class="countdown-cell"><span class="countdown-num" id="cdHours">00</span><span class="countdown-label" data-i18n="unitHours">horas</span></div>
+            <div class="countdown-cell"><span class="countdown-num" id="cdMins">00</span><span class="countdown-label" data-i18n="unitMins">min</span></div>
+            <div class="countdown-cell"><span class="countdown-num" id="cdSecs">00</span><span class="countdown-label" data-i18n="unitSecs">seg</span></div>
           </div>
-          <p class="countdown-caption">hasta el despegue</p>
+          <p class="countdown-caption" data-i18n="countdownCaption">hasta el despegue</p>
         </div>
 
         <div id="arrivedView" class="arrived-msg" hidden>
-          <p>¡Buen viaje!</p>
-          <p class="arrived-sub">ya estás en Perú, rayito ☀️</p>
+          <p data-i18n="arrivedTitle">¡Buen viaje!</p>
+          <p class="arrived-sub" data-i18n="arrivedSub">ya estás en Perú, rayito ☀️</p>
         </div>
       </div>
     </div>
@@ -115,19 +134,19 @@
          has to fit the countdown digits, regardless of screen size. -->
     <div class="date-picker-shell">
       <form id="datePickerForm" class="date-picker-form" hidden>
-        <label for="departureInput">elige tu fecha de vuelo</label>
+        <label for="departureInput" data-i18n="datePickerLabel">elige tu fecha de vuelo</label>
         <input type="date" id="departureInput" required>
-        <button type="submit">Guardar fecha</button>
-        <p class="date-picker-hint">solo se puede fijar una vez — ¡elígela con cariño!</p>
+        <button type="submit" data-i18n="datePickerButton">Guardar fecha</button>
+        <p class="date-picker-hint" data-i18n="datePickerHint">solo se puede fijar una vez — ¡elígela con cariño!</p>
       </form>
     </div>
     <p class="hero-note" id="dateSourceNote"></p>
   </section>
 
-  <!-- ============ BEFORE / AFTER PHOTOS ============ -->
-  <section class="photos" id="photos">
-    <div class="section-stamp reveal" aria-hidden="true">ANTES · DESPUÉS</div>
-    <h2 class="section-title reveal">Cómo has crecido</h2>
+  <!-- ============ BEFORE THE TRIP: BEFORE/AFTER PHOTOS ============ -->
+  <section class="photos" id="photosBefore">
+    <div class="section-stamp reveal" aria-hidden="true" data-i18n="beforeStamp">ANTES DEL VIAJE</div>
+    <h2 class="section-title reveal" data-i18n="beforeTitle">Cómo has crecido</h2>
 
     <div class="slider-shell reveal">
       <div class="ba-empty" id="baEmpty">
@@ -136,8 +155,8 @@
           <circle cx="15" cy="20" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
           <path d="M4 34 L16 24 L24 30 L32 20 L44 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-        <p>aún no hay fotos de antes/después</p>
-        <p class="ba-empty-sub">sube el primer par cuando lo tengas — un antes y un después juntos</p>
+        <p data-i18n="beforeEmptyText">aún no hay fotos de antes/después</p>
+        <p class="ba-empty-sub" data-i18n="beforeEmptySub">sube el primer par cuando lo tengas — un antes y un después juntos</p>
       </div>
 
       <div class="ba-slider" id="baSlider" hidden>
@@ -151,46 +170,91 @@
             <svg viewBox="0 0 24 24" width="16" height="16"><path d="M8 6 L2 12 L8 18 M16 6 L22 12 L16 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
         </div>
-        <span class="ba-tag ba-tag--before">ANTES</span>
-        <span class="ba-tag ba-tag--after">DESPUÉS</span>
+        <span class="ba-tag ba-tag--before" data-i18n="tagBefore">ANTES</span>
+        <span class="ba-tag ba-tag--after" data-i18n="tagAfter">DESPUÉS</span>
       </div>
 
       <div class="slider-controls" id="sliderControls" hidden>
-        <button class="nav-arrow" id="prevPairBtn" aria-label="Par anterior">&#8592;</button>
+        <button class="nav-arrow" id="prevPairBtn" data-i18n-aria="prevPairAria" aria-label="Par anterior">&#8592;</button>
         <div class="pair-dots" id="pairDots"></div>
-        <button class="nav-arrow" id="nextPairBtn" aria-label="Siguiente par">&#8594;</button>
+        <button class="nav-arrow" id="nextPairBtn" data-i18n-aria="nextPairAria" aria-label="Siguiente par">&#8594;</button>
       </div>
       <p class="ba-caption" id="baCaption"></p>
 
-      <button class="add-photo-btn" id="addPhotoBtn" title="Agregar una foto">
+      <button class="add-photo-btn" id="addPhotoBtn" data-i18n-title="addPhotoBtnTitle" title="Agregar una foto">
         <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5 L12 19 M5 12 L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-        agregar foto
+        <span data-i18n="addPhotoBtn">agregar foto</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ============ DURING THE TRIP: PHOTO GALLERY ============ -->
+  <section class="photos photos-during" id="photosDuring">
+    <div class="section-stamp reveal" aria-hidden="true" data-i18n="duringStamp">DURANTE EL VIAJE</div>
+    <h2 class="section-title reveal" data-i18n="duringTitle">El viaje en fotos</h2>
+
+    <div class="gallery-shell reveal">
+      <div class="gallery-empty" id="duringEmpty">
+        <svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true">
+          <rect x="4" y="10" width="40" height="30" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="15" cy="20" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 34 L16 24 L24 30 L32 20 L44 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p data-i18n="duringEmptyText">aún no hay fotos del viaje</p>
+        <p class="ba-empty-sub" data-i18n="duringEmptySub">las fotos que subas aquí aparecerán para todos los que abran este sitio</p>
+      </div>
+
+      <div class="gallery-grid" id="duringGrid" hidden></div>
+
+      <button class="add-photo-btn" id="addDuringPhotoBtn" data-i18n-title="addDuringPhotoBtnTitle" title="Agregar una foto del viaje">
+        <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5 L12 19 M5 12 L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span data-i18n="addDuringPhotoBtn">agregar foto del viaje</span>
       </button>
     </div>
   </section>
 
 </main>
 
-<!-- ============ ADD PHOTO MODAL ============ -->
+<!-- ============ ADD BEFORE/AFTER PAIR MODAL ============ -->
 <div class="modal-backdrop" id="addPhotoBackdrop" hidden>
   <div class="modal add-photo-modal" role="dialog" aria-modal="true" aria-labelledby="addPhotoTitle">
-    <button class="modal-close" id="closeAddPhoto" aria-label="Cerrar">&times;</button>
-    <h3 id="addPhotoTitle">Añade un par de fotos</h3>
+    <button class="modal-close" id="closeAddPhoto" data-i18n-aria="closeAria" aria-label="Cerrar">&times;</button>
+    <h3 id="addPhotoTitle" data-i18n="addPairModalTitle">Añade un par de fotos</h3>
     <form id="addPhotoForm">
       <label class="file-drop">
-        <span>Foto "antes"</span>
+        <span data-i18n="beforeFileLabel">Foto "antes"</span>
         <input type="file" accept="image/*" id="beforeFileInput" required>
       </label>
       <label class="file-drop">
-        <span>Foto "después"</span>
+        <span data-i18n="afterFileLabel">Foto "después"</span>
         <input type="file" accept="image/*" id="afterFileInput" required>
       </label>
       <label class="caption-field">
-        <span>Nota breve (opcional)</span>
-        <input type="text" id="pairCaptionInput" maxlength="80" placeholder="ej. de la ventana a las nubes">
+        <span data-i18n="captionLabel">Nota breve (opcional)</span>
+        <input type="text" id="pairCaptionInput" maxlength="80" data-i18n-placeholder="pairCaptionPlaceholder" placeholder="ej. de la ventana a las nubes">
       </label>
-      <button type="submit" class="primary-btn" id="uploadPairBtn">Subir par</button>
+      <button type="submit" class="primary-btn" id="uploadPairBtn" data-i18n="uploadPairBtn">Subir par</button>
       <p class="upload-status" id="uploadStatus" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ ADD DURING-TRIP PHOTO MODAL ============ -->
+<div class="modal-backdrop" id="addDuringPhotoBackdrop" hidden>
+  <div class="modal add-photo-modal" role="dialog" aria-modal="true" aria-labelledby="addDuringPhotoTitle">
+    <button class="modal-close" id="closeAddDuringPhoto" data-i18n-aria="closeAria" aria-label="Cerrar">&times;</button>
+    <h3 id="addDuringPhotoTitle" data-i18n="addDuringModalTitle">Añade una foto del viaje</h3>
+    <form id="addDuringPhotoForm">
+      <label class="file-drop">
+        <span data-i18n="duringFileLabel">Foto</span>
+        <input type="file" accept="image/*" id="duringFileInput" required>
+      </label>
+      <label class="caption-field">
+        <span data-i18n="captionLabel">Nota breve (opcional)</span>
+        <input type="text" id="duringCaptionInput" maxlength="80" data-i18n-placeholder="duringCaptionPlaceholder" placeholder="ej. Machu Picchu al amanecer">
+      </label>
+      <button type="submit" class="primary-btn" id="uploadDuringBtn" data-i18n="uploadDuringBtn">Subir foto</button>
+      <p class="upload-status" id="uploadDuringStatus" aria-live="polite"></p>
     </form>
   </div>
 </div>
@@ -198,18 +262,18 @@
 <!-- ============ FRIEND NOTES PANEL ============ -->
 <div class="modal-backdrop" id="notesBackdrop" hidden>
   <aside class="notes-panel" id="notesPanel" role="dialog" aria-modal="true" aria-labelledby="notesTitle">
-    <button class="modal-close" id="closeNotes" aria-label="Cerrar notas">&times;</button>
-    <h3 id="notesTitle">La saca postal</h3>
-    <p class="notes-sub">notas de quienes te desean buen viaje</p>
+    <button class="modal-close" id="closeNotes" data-i18n-aria="closeNotesAria" aria-label="Cerrar notas">&times;</button>
+    <h3 id="notesTitle" data-i18n="notesTitle">La saca postal</h3>
+    <p class="notes-sub" data-i18n="notesSub">notas de quienes te desean buen viaje</p>
 
     <div class="notes-list" id="notesList" aria-live="polite">
       <!-- postcards injected here -->
     </div>
 
     <form id="noteForm" class="note-form">
-      <input type="text" id="noteName" maxlength="40" placeholder="tu nombre" required>
-      <textarea id="noteMessage" maxlength="300" rows="3" placeholder="deja tu mensaje de buen viaje..." required></textarea>
-      <button type="submit" class="primary-btn">Enviar nota</button>
+      <input type="text" id="noteName" maxlength="40" data-i18n-placeholder="noteNamePlaceholder" placeholder="tu nombre" required>
+      <textarea id="noteMessage" maxlength="300" rows="3" data-i18n-placeholder="noteMessagePlaceholder" placeholder="deja tu mensaje de buen viaje..." required></textarea>
+      <button type="submit" class="primary-btn" data-i18n="noteSubmitBtn">Enviar nota</button>
       <p class="note-status" id="noteStatus" aria-live="polite"></p>
     </form>
   </aside>
@@ -221,7 +285,7 @@
     <path d="M30 8 L34 30 L30 52 L26 30 Z" fill="currentColor" opacity="0.85"/>
     <path d="M8 30 L30 26 L52 30 L30 34 Z" fill="currentColor" opacity="0.55"/>
   </svg>
-  <p>hecho a mano, con cariño, para tu vuelta al mundo</p>
+  <p data-i18n="footerText">hecho a mano, con cariño, para tu vuelta al mundo</p>
 </footer>
 
 <!-- Firebase (Spark free tier): compat SDK loaded from CDN, Firestore only -->
@@ -230,6 +294,7 @@
 
 <script src="js/firebase-config.js"></script>
 <script src="js/cloudinary-config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
